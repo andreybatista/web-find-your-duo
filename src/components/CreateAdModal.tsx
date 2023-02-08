@@ -7,7 +7,7 @@ import { Check, GameController } from 'phosphor-react';
 import Input from './Form/Input';
 
 
-export default function CreateAdModal() {
+export default function CreateAdModal({ setGamesHome, gamesHome }: any) {
 
     interface Game {
         id: string;
@@ -15,13 +15,42 @@ export default function CreateAdModal() {
     }
 
     const [games, setGames] = useState<Game[]>([])
+    // const [NewListgames, setNewListGames] = useState<[]>([])
     const [weekDays, setWeekDays] = useState<string[]>([])
     const [useVoiceChannel, setUseVoiceChannel] = useState(false)
 
     useEffect(() => {
-        axios('http://localhost:3333/games').then(response => {
-            setGames(response.data)
-        })
+        // axios('http://localhost:8080/games').then(response => {
+        //     setGames(response.data)
+        // })
+        setGames(
+            [
+                {
+                    "id": "a8827c79-5a73-4743-aa3b-ccd5fa204d50",
+                    "title": "League of Legends",
+                },
+                {
+                    "id": "50dcfc4e-14d1-4549-abe9-c9aeca61ba5d",
+                    "title": "Counter-Strike: Global Offensive",
+                },
+                {
+                    "id": "d455284a-c460-4ead-908c-2c3934eb4c86",
+                    "title": "VALORANT",
+                },
+                {
+                    "id": "2f9dc062-fe72-49dd-99e7-bebbdec2b15d",
+                    "title": "Fall Guys",
+                },
+                {
+                    "id": "fffa483d-1142-47da-8f35-31b5303aff97",
+                    "title": "FIFA 23",
+                },
+                {
+                    "id": "7499ecf5-0539-4321-ad26-1cca166f2ee1",
+                    "title": "The Last of Us Part I",
+                }
+            ]
+        )
     }, [])
 
     async function handleCreateAd(event: FormEvent) {
@@ -33,21 +62,37 @@ export default function CreateAdModal() {
         if (!data.name) {
             return
         }
-        try {
-            await axios.post(`http://localhost:3333/games/${data.game}/ads`, {
-                "name": data.name,
-                "yearsPlaying": Number(data.yearsPlaying),
-                "discord": data.discord,
-                "weekDays": weekDays.map(Number),
-                "hourStart": data.hourStart,
-                "hourEnd": data.hourEnd,
-                "useVoiceChannel": useVoiceChannel,
-            })
-            alert('Anúncio criado com sucesso!')
-        } catch (err) {
-            console.log(err)
-            alert('Erro ao criar o anúncio!')
+        var teste = []
+        for (let index = 0; index < gamesHome.length; index++) {
+
+            if (gamesHome[index].id == data.game) {
+                teste[index] = {
+                    "id": gamesHome[index].id,
+                    "title": gamesHome[index].title,
+                    "bannerUrl": gamesHome[index].bannerUrl,
+                    "_count": {
+                        "ads": gamesHome[index]._count.ads + 1
+                    }
+                }
+            } else {
+                teste[index] = gamesHome[index];
+            }
+
         }
+
+        setGamesHome(teste)
+
+        // await axios.post(`http://localhost:8080/games/${data.game}/ads`, {
+        //     "name": data.name,
+        //     "yearsPlaying": Number(data.yearsPlaying),
+        //     "discord": data.discord,
+        //     "weekDays": weekDays.map(Number),
+        //     "hourStart": data.hourStart,
+        //     "hourEnd": data.hourEnd,
+        //     "useVoiceChannel": useVoiceChannel,
+        // })
+        // alert('Anúncio criado com sucesso!')
+        // alert('Erro ao criar o anúncio!')
     }
 
     return (
